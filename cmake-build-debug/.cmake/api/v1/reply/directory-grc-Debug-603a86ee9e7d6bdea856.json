@@ -1,0 +1,45 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"grc/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 9,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "share/gnuradio/grc/blocks",
+			"paths" : 
+			[
+				"grc/jammingSource_TDMSingle.block.yml",
+				"grc/jammingSource_AperiodicSpectrumMatched.block.yml",
+				"grc/jammingSource_Chirp.block.yml"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "grc",
+		"source" : "grc"
+	}
+}

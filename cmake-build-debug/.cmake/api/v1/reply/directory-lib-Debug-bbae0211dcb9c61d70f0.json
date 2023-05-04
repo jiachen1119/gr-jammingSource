@@ -1,0 +1,108 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"GR_LIBRARY_FOO"
+		],
+		"files" : 
+		[
+			"/usr/lib/x86_64-linux-gnu/cmake/gnuradio/GrMiscUtils.cmake",
+			"lib/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 44,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 64,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 72,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 87,
+				"parent" : 1
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/x86_64-linux-gnu",
+			"paths" : 
+			[
+				"lib/libgnuradio-jammingSource.so.1.0.0.0",
+				"lib/libgnuradio-jammingSource.so.1.0.0"
+			],
+			"targetId" : "gnuradio-jammingSource::@306ed2d68c6501e8728f",
+			"targetIndex" : 4,
+			"targetInstallNamelink" : "skip",
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/x86_64-linux-gnu",
+			"paths" : 
+			[
+				"lib/libgnuradio-jammingSource.so"
+			],
+			"targetId" : "gnuradio-jammingSource::@306ed2d68c6501e8728f",
+			"targetIndex" : 4,
+			"targetInstallNamelink" : "only",
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/gnuradio-jammingSource",
+			"exportName" : "gnuradio-jammingSource-export",
+			"exportTargets" : 
+			[
+				{
+					"id" : "gnuradio-jammingSource::@306ed2d68c6501e8728f",
+					"index" : 4
+				}
+			],
+			"paths" : 
+			[
+				"lib/CMakeFiles/Export/b6584d8cf22e34c141a22a5c7b6ff03f/gnuradio-jammingSourceTargets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/gnuradio-jammingSource",
+			"paths" : 
+			[
+				"cmake-build-debug/lib/cmake/Modules/gnuradio-jammingSourceConfig.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib",
+		"source" : "lib"
+	}
+}

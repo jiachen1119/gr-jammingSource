@@ -1,0 +1,46 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"include/gnuradio/jammingSource/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 12,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "include/gnuradio/jammingSource",
+			"paths" : 
+			[
+				"include/gnuradio/jammingSource/api.h",
+				"include/gnuradio/jammingSource/TDMSingle.h",
+				"include/gnuradio/jammingSource/AperiodicSpectrumMatched.h",
+				"include/gnuradio/jammingSource/Chirp.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "include/gnuradio/jammingSource",
+		"source" : "include/gnuradio/jammingSource"
+	}
+}

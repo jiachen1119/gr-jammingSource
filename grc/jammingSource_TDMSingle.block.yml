@@ -1,0 +1,61 @@
+id: jammingSource_TDMSingle
+label: TDMSingle
+category: '[jammingSource]'
+
+templates:
+  imports: import gnuradio.jammingSource
+  make: gnuradio.jammingSource.TDMSingle(${samp_rate}, ${freq}, ${period})
+  callbacks: 
+  - set_sampling_freq(${samp_rate})
+  - set_frequency(${freq})
+  - set_period(${period})
+#  Make one 'parameters' list entry for every parameter you want settable from the GUI.
+#     Keys include:
+#     * id (makes the value accessible as keyname, e.g. in the make entry)
+#     * label (label shown in the GUI)
+#     * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+#     * default
+parameters:
+- id: samp_rate
+  label: Sample Rate
+  dtype: real
+  default: 'samp_rate'
+
+- id: freq
+  label: Dopplers
+  dtype: string
+  default: '0'
+
+- id: period
+  label: Period
+  dtype: real
+  default: '1e-3'
+
+#- id: ...
+#  label: ...
+#  dtype: ...
+
+#  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
+#  Keys include:
+#      * label (an identifier for the GUI)
+#      * domain (optional - stream or message. Default is stream)
+#      * dtype (e.g. int, float, complex, byte, short, xxx_vector, ...)
+#      * vlen (optional - data stream vector length. Default is 1)
+#      * optional (optional - set to 1 for optional inputs. Default is 0)
+inputs:
+  - domain: message
+    id: cmd
+    optional: true
+outputs:
+  - domain: stream
+    dtype: fc32
+  
+#- label: ...
+#  domain: ...
+#  dtype: ...
+#  vlen: ...
+#  optional: ...
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1
