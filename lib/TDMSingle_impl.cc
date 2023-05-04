@@ -65,17 +65,27 @@ int TDMSingle_impl::work(int noutput_items,
         d_cur_sample_count+=out_nums;
     }
     else{
+         int current_count=0;
          d_nco.sincos(optr,remain_need_outnums,1);
-         // set current frequency index
+         current_count+=remain_need_outnums;
+         int temp_outnums=std::min(d_sample_per_freq,out_nums-remain_need_outnums);
+         while (temp_outnums==d_sample_per_freq){
+             d_cur_freq_index++;
+             if(d_cur_freq_index >= d_frequency.size()) d_cur_freq_index = 0;
+             d_nco.set_freq(2 * GR_M_PI * d_frequency[d_cur_freq_index] / d_sampling_freq);
+             d_nco.sincos(optr+current_count,
+                          temp_outnums,1);
+             current_count+=temp_outnums;
+             temp_outnums=std::min(d_sample_per_freq,out_nums-current_count);
+         }
          d_cur_freq_index++;
          if(d_cur_freq_index >= d_frequency.size()) d_cur_freq_index = 0;
          d_nco.set_freq(2 * GR_M_PI * d_frequency[d_cur_freq_index] / d_sampling_freq);
-         d_nco.sincos(optr+remain_need_outnums,
-                      out_nums-remain_need_outnums,1);
-         d_cur_sample_count+=out_nums;
+         d_nco.sincos(optr+current_count,
+                      temp_outnums,1);
+         d_cur_sample_count+=temp_outnums;
     }
-    if (d_cur_sample_count>=d_sample_per_freq)
-        d_cur_sample_count-=d_sample_per_freq;
+    d_cur_sample_count=d_cur_sample_count%d_sample_per_freq;
     // Tell runtime system how many output items we produced.
     return noutput_items;
 }
