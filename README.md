@@ -21,6 +21,8 @@ Besides, C++ and gcc environment is required.
 
 A block that produce continuous wave (CW) jamming signal with TDM center frequency. 
 
+***Data Type:*** gr-complex(complex in float)
+
 ### ***Three parameters:***
 
 - ***Sampling Rate:*** sampling rate. in Hz
