@@ -34,6 +34,7 @@ TDMSingle_impl::TDMSingle_impl(double sampling_freq,
     d_sampling_freq(sampling_freq),
     d_period(period)
 {
+    d_cur_sample_count=0;
     set_frequency(wave_freq);
     this->message_port_register_in(pmt::mp("cmd"));
     this->set_msg_handler(pmt::mp("cmd"),
@@ -54,33 +55,27 @@ int TDMSingle_impl::work(int noutput_items,
     gr::thread::scoped_lock l(this->d_setlock);
 
     int out_nums = noutput_items;
-    int cur_out_nums = 0;
-    while(cur_out_nums<out_nums)
-    {
-        // the remaining samples needed to be produced
-        int remain_out = out_nums - cur_out_nums;
-        // samples need to be produced with current frequency
-        int samples_of_cur_freq = std::min(d_sample_per_freq-d_cur_sample_count,remain_out);
-        if(samples_of_cur_freq==0) throw std::runtime_error("jammingSource::TDMSingle: samples to be produced is zero!");
-        
+    int remain_need_outnums=d_sample_per_freq-d_cur_sample_count;
+    if(remain_need_outnums<=0)
+        throw std::runtime_error("jammingSource::TDMSingle: "
+                                 "remaining samples to be produced error!");
+    if (remain_need_outnums>=out_nums){
         // produce the samples
-        d_nco.sincos(optr + cur_out_nums,samples_of_cur_freq,1);
-
-        cur_out_nums += samples_of_cur_freq;
-        d_cur_sample_count += samples_of_cur_freq;
-
-        // switch to next frequency in d_frequency
-        if(d_cur_sample_count >= d_sample_per_freq)
-        {
-            // set current frequency index
-            d_cur_freq_index++;
-            if(d_cur_freq_index >= d_frequency.size()) d_cur_freq_index = 0;
-
-            d_nco.set_freq(2 * GR_M_PI * d_frequency[d_cur_freq_index] / d_sampling_freq);
-            d_cur_sample_count = 0;
-        }
+        d_nco.sincos(optr,out_nums,1);
+        d_cur_sample_count+=out_nums;
     }
-
+    else{
+         d_nco.sincos(optr,remain_need_outnums,1);
+         // set current frequency index
+         d_cur_freq_index++;
+         if(d_cur_freq_index >= d_frequency.size()) d_cur_freq_index = 0;
+         d_nco.set_freq(2 * GR_M_PI * d_frequency[d_cur_freq_index] / d_sampling_freq);
+         d_nco.sincos(optr+remain_need_outnums,
+                      out_nums-remain_need_outnums,1);
+         d_cur_sample_count+=out_nums;
+    }
+    if (d_cur_sample_count>=d_sample_per_freq)
+        d_cur_sample_count-=d_sample_per_freq;
     // Tell runtime system how many output items we produced.
     return noutput_items;
 }
@@ -102,6 +97,7 @@ void TDMSingle_impl::set_frequency(std::string frequency)
         float temp_freq=std::stof(temp);
         d_frequency.push_back(temp_freq);
     }
+    d_nco.set_freq(2 * GR_M_PI * d_frequency[0] / d_sampling_freq);
 
     // set current frequency index
     d_cur_freq_index = 0;
