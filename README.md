@@ -23,7 +23,7 @@ A block that produce continuous wave (CW) jamming signal with TDM center frequen
 
 ***Data Type:*** gr-complex(complex in float)
 
-### ***Three parameters:***
+#### ***Three parameters:***
 
 - ***Sampling Rate:*** sampling rate. in Hz
 
@@ -37,7 +37,7 @@ A block that produce continuous wave (CW) jamming signal with TDM center frequen
 
 A block produce aperiodic spectrum matched jamming signals. This block produce sequence of -1 and 1.
 
-### ***Two parameters:***
+#### ***Two parameters:***
 
 - ***Sample Rate:*** sampling frequency
 
@@ -50,6 +50,7 @@ A block produce aperiodic spectrum matched jamming signals. This block produce s
 This block generates chrip signals.
 
 #### ***Four parameters:***
+
 - ***Sample Rate:*** sampling frequency
 
 - ***min frequency:*** the minimum frequency in the chirp
@@ -83,8 +84,8 @@ $ make -j8
 Different from general c++ program, gnuradio block must be installed into your system.
 Do:
 ```
-sudo make install
-sudo ldconfig
+$ sudo make install
+$ sudo ldconfig
 ```
 
 **Notice:** If the yaml file is not configure correctly, the block cannot show in the interface of Gnuradio program.
