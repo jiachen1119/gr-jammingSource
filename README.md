@@ -59,7 +59,7 @@ This block generates chrip signals.
 
 - ***period:*** the length of one loop
 
-# Install
+## Install
 This section describes how to install the OOT block of Gnuradio  in Linux.
 
 ### Build and install gr-jamming source

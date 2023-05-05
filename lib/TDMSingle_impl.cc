@@ -55,19 +55,23 @@ int TDMSingle_impl::work(int noutput_items,
     gr::thread::scoped_lock l(this->d_setlock);
 
     int out_nums = noutput_items;
+    //calculate remaining outnums to be needed to transmit in one "samples in one doppler frequency"
     int remain_need_outnums=d_sample_per_freq-d_cur_sample_count;
     if(remain_need_outnums<=0)
         throw std::runtime_error("jammingSource::TDMSingle: "
                                  "remaining samples to be produced error!");
+    // if the data in one period is too small to consume the remaining outnums, the frequency of out data do not change
     if (remain_need_outnums>=out_nums){
         // produce the samples
         d_nco.sincos(optr,out_nums,1);
         d_cur_sample_count+=out_nums;
     }
     else{
+        //if the period is so long that we must change the doppler frequency
          int current_count=0;
          d_nco.sincos(optr,remain_need_outnums,1);
          current_count+=remain_need_outnums;
+         //test the period of data include the number of data segments(d_sample_per_freq)
          int temp_outnums=std::min(d_sample_per_freq,out_nums-remain_need_outnums);
          while (temp_outnums==d_sample_per_freq){
              d_cur_freq_index++;
@@ -83,8 +87,10 @@ int TDMSingle_impl::work(int noutput_items,
          d_nco.set_freq(2 * GR_M_PI * d_frequency[d_cur_freq_index] / d_sampling_freq);
          d_nco.sincos(optr+current_count,
                       temp_outnums,1);
+         //count the number of outnums in this out loop
          d_cur_sample_count+=temp_outnums;
     }
+    //ensure the count less than "samples per frequency"
     d_cur_sample_count=d_cur_sample_count%d_sample_per_freq;
     // Tell runtime system how many output items we produced.
     return noutput_items;
