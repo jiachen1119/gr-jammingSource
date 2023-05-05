@@ -4,7 +4,7 @@ A gnuradio module for jamming signal generation.
 
 The block is used to produce some kind of GNSS jamming source to test GNSS software receiver.
 
-Based on the Gnuradio manual and ready-made C++ code by my fellow graduate brother Teng Hua, I have improved this block.
+Based on the Gnuradio manual and ready-made C++ code by my fellow graduate brother Teng Hua, this block had been improved.
 
 The block is for experimentation and belongs to **Southeast University** from Nanjing only.
 
