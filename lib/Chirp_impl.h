@@ -11,46 +11,41 @@
 #include <gnuradio/jammingSource/Chirp.h>
 #include <gnuradio/fxpt_nco.h>
 
-namespace gr {
-namespace jammingSource {
+
+namespace gr::jammingSource {
 
 class Chirp_impl : public Chirp
 {
 private:
-    double d_sampling_frequency;
-    double d_period;
-    double d_max_frequency;
-    double d_min_frequency;
-    int d_samples_per_loop;
-    int d_count;
-    double d_freq_inc_per_sample;
-    gr::fxpt_nco d_nco;
+    double samplingFrequency_;
+    double period_;
+    double maxFrequency_;
+    double minFrequency_;
+    int samplesPerLoop_;
+    double freqIncPerSample_;
+    gr::fxpt_nco nco_;
 public:
     Chirp_impl(double samp_rate, double min_freq, double max_freq, double period);
-    ~Chirp_impl();
+    ~Chirp_impl() override;
 
     // Where all the action really happens
     int work(int noutput_items,
              gr_vector_const_void_star& input_items,
-             gr_vector_void_star& output_items);
+             gr_vector_void_star& output_items) override;
 
-    double sampling_freq() const override {return d_sampling_frequency;}
-
-    double period() const override {return d_period;}
+    double sampling_freq() const override {return samplingFrequency_;}
+    double period() const override {return period_;}
 
     void set_sampling_freq(double samp_rate) override;
-
     void set_period(double period) override;
-
     void set_max_freq(double max_freq) override;
-
     void set_min_freq(double min_freq) override;
 
     void reset_all();
 
 };
 
-} // namespace jammingSource
-} // namespace gr
+} // namespace gr::jammingSource
+
 
 #endif /* INCLUDED_JAMMINGSOURCE_CHIRP_IMPL_H */
