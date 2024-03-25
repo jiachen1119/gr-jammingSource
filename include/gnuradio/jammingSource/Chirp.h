@@ -11,8 +11,7 @@
 #include <gnuradio/jammingSource/api.h>
 #include <gnuradio/sync_block.h>
 
-namespace gr {
-namespace jammingSource {
+namespace gr::jammingSource {
 
 /*!
  * \brief <+description of block+>
@@ -63,7 +62,7 @@ public:
     virtual void set_period(double period) = 0;
 };
 
-} // namespace jammingSource
-} // namespace gr
+} // namespace gr::jammingSource
+
 
 #endif /* INCLUDED_JAMMINGSOURCE_CHIRP_H */

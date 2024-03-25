@@ -26,11 +26,13 @@ Chirp_impl::Chirp_impl(double samp_rate, double min_freq, double max_freq, doubl
                      gr::io_signature::make(0, 0, 0),
                      gr::io_signature::make(
                          1, 1, sizeof(output_type))),
+      type_(gr::jammingSource::ChirpType::Trigonometric),
       samplingFrequency_(samp_rate),
       period_(period),
       maxFrequency_(max_freq),
       minFrequency_(min_freq),
-      count_(0)
+      count_(0),
+      freqIncCount_(0)
 {
     this->reset_all();
 }
@@ -48,19 +50,26 @@ int Chirp_impl::work(int noutput_items,
     {
         nco_.sincos(&cos_num,&sin_num);
         *out++= gr_complex(sin_num,cos_num);
-
         // the purpose of count_ is to avoid too small adjust-frequency, leading to 0 in every step
-        count_ += 2 * GR_M_PI * freqIncPerSample_ / samplingFrequency_;
+        count_ += 2 * GR_M_PI * freqIncPerSample_.at(freqIncCount_) / samplingFrequency_;
         auto count_fixed = gr::fxpt::float_to_fixed((float) count_);
         if (count_fixed != 0){
             nco_.adjust_freq((float)count_);
             count_ = count_ - gr::fxpt::fixed_to_float(count_fixed);
         }
         nco_.step();
+        freqIncCount_++;
+
+        // judge whether the count out of vector range
+        if (freqIncCount_ >= freqIncPerSample_.size() - 1){
+            freqIncCount_ = 0;
+        }
         
         auto curfreq = nco_.get_freq();
-        if(curfreq > 2 * GR_M_PI * maxFrequency_ / samplingFrequency_)
+        if(curfreq > 2 * GR_M_PI * maxFrequency_ / samplingFrequency_){
             nco_.set_freq(2 * GR_M_PI * minFrequency_ / samplingFrequency_);
+            freqIncCount_ = 0;
+        }
     }
 
     // Tell runtime system how many output items we produced.
@@ -93,14 +102,31 @@ void Chirp_impl::set_max_freq(double max_freq)
 
 void Chirp_impl::reset_all()
 {
-    // set d_samples per loop
-    double samples_per_loop = period_ * samplingFrequency_;
-    samplesPerLoop_ = (int) samples_per_loop;
+    freqIncPerSample_.clear();
+    if (type_ == gr::jammingSource::ChirpType::Linear){
+        // set d_samples per loop
+        double samples_per_loop = period_ * samplingFrequency_;
+        samplesPerLoop_ = (int) samples_per_loop;
 
-    // if the difference between the max freq and min freq is too small,
-    // and the period is too long, the freq increasing per sample/sampling frequency is less than 1/2^32
-    // set frequency increments per sample
-    freqIncPerSample_ = (maxFrequency_ - minFrequency_) / (double)samplesPerLoop_;
+        // if the difference between the max freq and min freq is too small,
+        // and the period is too long, the freq increasing per sample/sampling frequency is less than 1/2^32
+        // set frequency increments per sample
+        freqIncPerSample_ .push_back((maxFrequency_ - minFrequency_) / (double)samplesPerLoop_);
+    }
+    if (type_ == gr::jammingSource::ChirpType::Quadratic){
+        double samples_per_loop = period_ * samplingFrequency_;
+        samplesPerLoop_ = (int) samples_per_loop;
+        for (int i = 0; i < samplesPerLoop_; ++i) {
+            freqIncPerSample_.push_back(minFrequency_ + (maxFrequency_ - minFrequency_)/(samplesPerLoop_^2)*(i^2));
+        }
+    }
+    if (type_ == gr::jammingSource::ChirpType::Trigonometric){
+        double samples_per_loop = period_ * samplingFrequency_;
+        samplesPerLoop_ = (int) samples_per_loop;
+        for (int i = 0; i < samplesPerLoop_; ++i) {
+            freqIncPerSample_.push_back(minFrequency_ + (maxFrequency_ - minFrequency_)/(samplesPerLoop_^3)*(i^3));
+        }
+    }
 
     nco_.set_freq(2 * GR_M_PI * minFrequency_ / samplingFrequency_);
 }

@@ -14,17 +14,29 @@
 
 namespace gr::jammingSource {
 
+enum ChirpType{
+    Linear,
+    Quadratic,
+    Cubic,
+    Exponential,
+    Logarithmic,
+    Trigonometric };
+
+
 class Chirp_impl : public Chirp
 {
 private:
+    ChirpType type_;
     double samplingFrequency_;
     double period_;
     double maxFrequency_;
     double minFrequency_;
+
     int samplesPerLoop_;
-    double freqIncPerSample_;
+    std::vector<double> freqIncPerSample_;
     gr::fxpt_nco nco_;
     double count_;
+    int freqIncCount_;
 
 public:
     Chirp_impl(double samp_rate, double min_freq, double max_freq, double period);
