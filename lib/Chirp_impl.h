@@ -24,6 +24,8 @@ private:
     int samplesPerLoop_;
     double freqIncPerSample_;
     gr::fxpt_nco nco_;
+    double count_;
+
 public:
     Chirp_impl(double samp_rate, double min_freq, double max_freq, double period);
     ~Chirp_impl() override;

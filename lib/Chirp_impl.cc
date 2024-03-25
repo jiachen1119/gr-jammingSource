@@ -29,7 +29,8 @@ Chirp_impl::Chirp_impl(double samp_rate, double min_freq, double max_freq, doubl
       samplingFrequency_(samp_rate),
       period_(period),
       maxFrequency_(max_freq),
-      minFrequency_(min_freq)
+      minFrequency_(min_freq),
+      count_(0)
 {
     this->reset_all();
 }
@@ -47,7 +48,14 @@ int Chirp_impl::work(int noutput_items,
     {
         nco_.sincos(&cos_num,&sin_num);
         *out++= gr_complex(sin_num,cos_num);
-        nco_.adjust_freq(2 * GR_M_PI * freqIncPerSample_ / samplingFrequency_);
+
+        // the purpose of count_ is to avoid too small adjust-frequency, leading to 0 in every step
+        count_ += 2 * GR_M_PI * freqIncPerSample_ / samplingFrequency_;
+        auto count_fixed = gr::fxpt::float_to_fixed((float) count_);
+        if (count_fixed != 0){
+            nco_.adjust_freq((float)count_);
+            count_ = count_ - gr::fxpt::fixed_to_float(count_fixed);
+        }
         nco_.step();
         
         auto curfreq = nco_.get_freq();
@@ -89,6 +97,8 @@ void Chirp_impl::reset_all()
     double samples_per_loop = period_ * samplingFrequency_;
     samplesPerLoop_ = (int) samples_per_loop;
 
+    // if the difference between the max freq and min freq is too small,
+    // and the period is too long, the freq increasing per sample/sampling frequency is less than 1/2^32
     // set frequency increments per sample
     freqIncPerSample_ = (maxFrequency_ - minFrequency_) / (double)samplesPerLoop_;
 
