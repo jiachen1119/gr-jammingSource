@@ -50,7 +50,7 @@ int Chirp_impl::work(int noutput_items,
     {
         nco_.sincos(&cos_num,&sin_num);
         *out++= gr_complex(sin_num,cos_num);
-        // the purpose of count_ is to avoid too small adjust-frequency, leading to 0 in every step
+        // the purpose of sampleCount_ is to avoid too small adjust-frequency, leading to 0 in every step
         count_ += 2 * GR_M_PI * freqIncPerSample_.at(freqIncCount_) / samplingFrequency_;
         auto count_fixed = gr::fxpt::float_to_fixed((float) count_);
         if (count_fixed != 0){

@@ -16,6 +16,7 @@ list(APPEND jammingSource_sources
     AperiodicSpectrumMatched_impl.cc
     Chirp_impl.cc
         CustomNco.h
+    BOC_impl.cc
 )
 
 set(jammingSource_sources "${jammingSource_sources}" PARENT_SCOPE)
@@ -59,6 +60,7 @@ include(GrTest)
 #include_directories()
 # List all files that contain Boost.UTF unit tests here
 list(APPEND test_jammingSource_sources
+qa_BOC.cc
 )
 # Anything we need to link to for the unit tests go here
 list(APPEND GR_TEST_TARGET_DEPS gnuradio-jammingSource)

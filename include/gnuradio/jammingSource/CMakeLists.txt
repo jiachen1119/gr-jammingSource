@@ -13,5 +13,6 @@ install(FILES
     api.h
     TDMSingle.h
     AperiodicSpectrumMatched.h
-    Chirp.h DESTINATION include/gnuradio/jammingSource
+    Chirp.h
+    BOC.h DESTINATION include/gnuradio/jammingSource
 )

@@ -8,10 +8,8 @@
 #include "AperiodicSpectrumMatched_impl.h"
 #include <gnuradio/io_signature.h>
 
-namespace gr {
-namespace jammingSource {
+namespace gr::jammingSource {
 
-#pragma message("set the following appropriately and remove this warning")
 using output_type = int;
 AperiodicSpectrumMatched::sptr AperiodicSpectrumMatched::make(double samp_rate,
                                                               double chipRate)
@@ -35,23 +33,22 @@ AperiodicSpectrumMatched_impl::AperiodicSpectrumMatched_impl(double samp_rate,
 {
     d_cur_value=1;
     this->d_set_sample_per_chip();
+    // Limits are [minimum, maximum)
     d_rng.set_integer_limits(0,2);
     d_rng.reseed(1);
+    std::cout << "block constructed successfully! "<< std::endl;
 }
 
-/*
- * Our virtual destructor.
- */
-AperiodicSpectrumMatched_impl::~AperiodicSpectrumMatched_impl() {}
+AperiodicSpectrumMatched_impl::~AperiodicSpectrumMatched_impl(){
+    std::cout << "block destructed successfully! "<< std::endl;
+};
 
 int AperiodicSpectrumMatched_impl::work(int noutput_items,
                                         gr_vector_const_void_star& input_items,
                                         gr_vector_void_star& output_items)
 {
     auto out = static_cast<output_type*>(output_items[0]);
-
     int count = 0;
-
     while(count < noutput_items)
     {
         while(d_cur_sample_count < d_sample_per_chip)
@@ -66,7 +63,6 @@ int AperiodicSpectrumMatched_impl::work(int noutput_items,
 
         d_cur_sample_count = 0;
     }
-
 
     // Tell runtime system how many output items we produced.
     return noutput_items;
@@ -84,11 +80,12 @@ void AperiodicSpectrumMatched_impl::set_chip_rate(double chip_rate)
     this->d_set_sample_per_chip();
 }
 
+// 存在累加误差
 void AperiodicSpectrumMatched_impl::d_set_sample_per_chip()
 {
     double sample_per_chip = d_sampling_freq / d_chip_rate;
     d_sample_per_chip = (int) round(sample_per_chip);
 }
 
-} /* namespace jammingSource */
-} /* namespace gr */
+} // namespace gr::jammingSource
+

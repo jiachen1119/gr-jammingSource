@@ -11,8 +11,7 @@
 #include <gnuradio/jammingSource/AperiodicSpectrumMatched.h>
 #include <gnuradio/random.h>
 
-namespace gr {
-namespace jammingSource {
+namespace gr::jammingSource {
 
 class AperiodicSpectrumMatched_impl : public AperiodicSpectrumMatched
 {
@@ -26,12 +25,11 @@ private:
 
 public:
     AperiodicSpectrumMatched_impl(double samp_rate, double chipRate);
-    ~AperiodicSpectrumMatched_impl();
+    ~AperiodicSpectrumMatched_impl() override;
 
-    // Where all the action really happens
     int work(int noutput_items,
              gr_vector_const_void_star& input_items,
-             gr_vector_void_star& output_items);
+             gr_vector_void_star& output_items) override;
     
     void set_sampling_freq(double samp_rate) override;
 
@@ -44,7 +42,7 @@ public:
     double chip_rate() const override{return d_chip_rate;}
 };
 
-} // namespace jammingSource
-} // namespace gr
+} // namespace gr::jammingSource
+
 
 #endif /* INCLUDED_JAMMINGSOURCE_APERIODICSPECTRUMMATCHED_IMPL_H */
