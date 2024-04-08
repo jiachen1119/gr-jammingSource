@@ -48,7 +48,7 @@ int BOC_impl::work(int noutput_items,
     {
         if (std::floor(current_sample_count_ * chips_per_sample_ + rem_chip_) >= n_){
             // produce a random number
-            int temp = d_rng.ran_int();
+            int temp = static_cast<int>(d_rng.ran_int());
             if(temp == 0) current_value_ = -1;
             else current_value_ = 1;
             // record the remnant chip
