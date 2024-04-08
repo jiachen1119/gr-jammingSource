@@ -31,6 +31,7 @@ private:
     int current_sample_count_ = 0;
     int current_value_ = 1;
     float rem_chip_ = 0;
+    int current_subcarrier_value = 1;
 
 public:
     BOC_impl(int a, int b, float samp_freq);

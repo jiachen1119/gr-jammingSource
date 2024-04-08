@@ -23,7 +23,7 @@ BOC_impl::BOC_impl(int a,int b,float samp_freq)
                      gr::io_signature::make(
                          1 /* min outputs */, 1 /*max outputs */, sizeof(output_type)))
 {
-    n_ = a / b * 2;
+    n_ = static_cast<int>((static_cast<float>(a) / static_cast<float>(b)) * 2);
     sample_freq_ = samp_freq;
     RC_ = static_cast<float> (b * 1.023e6);
     Rs_ = static_cast<float> (a * 1.023e6);
@@ -32,9 +32,10 @@ BOC_impl::BOC_impl(int a,int b,float samp_freq)
     d_rng.reseed(1);
     current_sample_count_ = 0;
     current_value_ = 1;
+    current_subcarrier_value *= current_value_;
     rem_chip_ = 0;
-    std::cout << "a=" <<a<<" b="<<b<<" sampling frequency = "<<sample_freq_<<std::endl;
-    std::cout << "chips per sample" << chips_per_sample_ <<std::endl;
+    std::cout << "a = " <<a<<" b = "<<b<<" sampling frequency = "<<sample_freq_<<std::endl;
+    std::cout << "chips per sample = " << chips_per_sample_ <<std::endl;
 }
 
 int BOC_impl::work(int noutput_items,
@@ -54,10 +55,10 @@ int BOC_impl::work(int noutput_items,
             rem_chip_ = current_sample_count_ * chips_per_sample_ - n_;
             current_sample_count_ = 0;
         }
-        if ((int)std::floor(current_sample_count_ * chips_per_sample_ + rem_chip_) % 2 == 0)
-            *out = static_cast<output_type>(current_value_);
-        else
-            *out = -static_cast<output_type>(current_value_);
+        if ((int)std::floor(current_sample_count_ * chips_per_sample_ + rem_chip_) !=
+            (int)std::floor((current_sample_count_-1) * chips_per_sample_ + rem_chip_))
+            current_subcarrier_value = -current_subcarrier_value;
+        *out = static_cast<output_type>(current_subcarrier_value * current_value_);
         out++;
         current_sample_count_++;
         count++;
