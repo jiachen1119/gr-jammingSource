@@ -25,6 +25,7 @@ namespace py = pybind11;
     void bind_AperiodicSpectrumMatched(py::module& m);
     void bind_Chirp(py::module& m);
     void bind_BOC(py::module& m);
+    void bind_BOC_TDM(py::module& m);
 // ) END BINDING_FUNCTION_PROTOTYPES
 
 
@@ -57,5 +58,6 @@ PYBIND11_MODULE(jammingSource_python, m)
     bind_AperiodicSpectrumMatched(m);
     bind_Chirp(m);
     bind_BOC(m);
+    bind_BOC_TDM(m);
     // ) END BINDING_FUNCTION_CALLS
 }

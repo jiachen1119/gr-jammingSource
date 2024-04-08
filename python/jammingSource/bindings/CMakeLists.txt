@@ -32,7 +32,8 @@ list(APPEND jammingSource_python_files
     TDMSingle_python.cc
     AperiodicSpectrumMatched_python.cc
     Chirp_python.cc
-    BOC_python.cc python_bindings.cc)
+    BOC_python.cc
+    BOC_TDM_python.cc python_bindings.cc)
 
 GR_PYBIND_MAKE_OOT(jammingSource
    ../../..

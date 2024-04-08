@@ -17,6 +17,7 @@ list(APPEND jammingSource_sources
     Chirp_impl.cc
         CustomNco.h
     BOC_impl.cc
+    BOC_TDM_impl.cc
 )
 
 set(jammingSource_sources "${jammingSource_sources}" PARENT_SCOPE)
@@ -60,6 +61,7 @@ include(GrTest)
 #include_directories()
 # List all files that contain Boost.UTF unit tests here
 list(APPEND test_jammingSource_sources
+qa_BOC_TDM.cc
 qa_BOC.cc
 )
 # Anything we need to link to for the unit tests go here
