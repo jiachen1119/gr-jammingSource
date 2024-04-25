@@ -27,6 +27,9 @@ private:
     float chips_per_sample_;
     float sample_freq_;
     gr::random d_rng;
+    std::random_device rd_;
+    std::mt19937_64 gen_;
+    std::uniform_int_distribution<int> distribution_;
 
     int current_sample_count_ = 0;
     int current_value_ = 1;

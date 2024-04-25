@@ -7,6 +7,7 @@
 
 #include "BOC_impl.h"
 #include <gnuradio/io_signature.h>
+#include <random>
 
 namespace gr::jammingSource {
 
@@ -30,6 +31,10 @@ BOC_impl::BOC_impl(int a,int b,float samp_freq)
     chips_per_sample_ = (2 * Rs_)/ sample_freq_ ;
     d_rng.set_integer_limits(0,2);
     d_rng.reseed(1);
+
+    gen_ = std::mt19937_64(rd_());
+    distribution_ = std::uniform_int_distribution<int>(1,10);
+
     current_sample_count_ = 0;
     current_value_ = 1;
     current_subcarrier_value *= current_value_;
@@ -44,12 +49,13 @@ int BOC_impl::work(int noutput_items,
 {
     auto out = static_cast<output_type*>(output_items[0]);
     int count = 0;
+
     while(count < noutput_items)
     {
         if (std::floor(current_sample_count_ * chips_per_sample_ + rem_chip_) >= n_){
             // produce a random number
-            int temp = static_cast<int>(d_rng.ran_int());
-            if(temp == 0) current_value_ = -1;
+            int temp = distribution_(gen_);
+            if(temp < 6) current_value_ = -1;
             else current_value_ = 1;
             // record the remnant chip
             rem_chip_ = current_sample_count_ * chips_per_sample_ - n_;

@@ -10,73 +10,71 @@
 
 namespace gr::jammingSource {
 
-using output_type = float;
-BOC_TDM::sptr BOC_TDM::make(int a, int b, float sample_freq, float period)
+using output_type = gr_complex;
+using in_type = gr_complex;
+BOC_TDM::sptr BOC_TDM::make(float sample_freq, float period, float proportion)
 {
-    return gnuradio::make_block_sptr<BOC_TDM_impl>(a, b, sample_freq, period);
+    return gnuradio::make_block_sptr<BOC_TDM_impl>(sample_freq, period,proportion);
 }
 
 
 /*
  * The private constructor
  */
-BOC_TDM_impl::BOC_TDM_impl(int a, int b, float sample_freq, float period)
+BOC_TDM_impl::BOC_TDM_impl(float sample_freq, float period, float proportion)
     : gr::sync_block("BOC_TDM",
-                     gr::io_signature::make(0, 0, 0),
+                     gr::io_signature::make(2, 2, sizeof(in_type)),
                      gr::io_signature::make(
                          1 /* min outputs */, 1 /*max outputs */, sizeof(output_type)))
 {
-    n_ = static_cast<int>((static_cast<float>(a) / static_cast<float>(b)) * 2);
+    current_count_ = 0;
     sample_freq_ = sample_freq;
-    period_ = period; // standard unit: second
-    RC_ = static_cast<float> (b * 1.023e6);
-    Rs_ = static_cast<float> (a * 1.023e6);
-    chips_per_sample_ = (2 * Rs_)/ sample_freq_ ;
-    d_rng.set_integer_limits(0,2);
-    d_rng.reseed(1);
-    current_sample_count_ = 0;
-    current_value_ = 1;
-    current_subcarrier_value *= current_value_;
-    rem_chip_ = 0;
-    std::cout << "a = " <<a<<" b = "<<b<<" sampling frequency = "<<sample_freq_<<std::endl;
-    std::cout << "chips per sample = " << chips_per_sample_ <<std::endl;
-    std::cout << "period = " << period_ <<std::endl;
+    period_ = period;
+    proportion_ = proportion;
+    loop_sample_ = std::floor(period_ * sample_freq_);
+    loop_sample_mainlobe_ = static_cast<int>(std::floor(period_ * sample_freq_ * (proportion_ / (proportion_ + 1))));
+    loop_sample_sidelobe_ = loop_sample_ - loop_sample_mainlobe_;
+
+    std::cout << "period = " <<period_<<std::endl;
+    std::cout << "proportion = " <<proportion_<<std::endl;
+    std::cout << "sample = " <<loop_sample_<<std::endl;
+    std::cout << "sample mainlobe = " <<loop_sample_mainlobe_<<std::endl;
+    std::cout << "sample sidelobe = " <<loop_sample_sidelobe_<<std::endl;
 }
 
 int BOC_TDM_impl::work(int noutput_items,
                        gr_vector_const_void_star& input_items,
                        gr_vector_void_star& output_items)
 {
+    gr::thread::scoped_lock l(this->d_setlock);
     auto out = static_cast<output_type*>(output_items[0]);
+    auto in1 = static_cast<const in_type *>(input_items[0]);
+    auto in2 = static_cast<const in_type *>(input_items[1]);
+
     int count = 0;
-    while(count < noutput_items)
-    {
-        if (std::floor(current_sample_count_ * chips_per_sample_ + rem_chip_) >= n_){
-            // produce a random number
-            int temp = static_cast<int>(d_rng.ran_int());
-            if(temp == 0) current_value_ = -1;
-            else current_value_ = 1;
-            // record the remnant chip
-            rem_chip_ = current_sample_count_ * chips_per_sample_ - n_;
-            current_sample_count_ = 0;
+    while (count < noutput_items){
+        if (current_count_ <= loop_sample_mainlobe_)
+            *out++ = *in1++;
+        else if (current_count_ > loop_sample_mainlobe_ && current_count_ < loop_sample_)
+            *out++ = *in2++;
+        else
+        {
+            current_count_ = 1;
+            continue;
         }
-        if ((int)std::floor(current_sample_count_ * chips_per_sample_ + rem_chip_) !=
-            (int)std::floor((current_sample_count_-1) * chips_per_sample_ + rem_chip_))
-            current_subcarrier_value = -current_subcarrier_value;
-        *out = static_cast<output_type>(current_subcarrier_value * current_value_);
-        out++;
-        current_sample_count_++;
         count++;
+        current_count_++;
     }
-    // Tell runtime system how many output items we produced.
     return noutput_items;
 }
 void BOC_TDM_impl::set_sampling_freq(float samp_rate) {
     this->sample_freq_ = samp_rate;
-    this->chips_per_sample_ = sample_freq_ / Rs_;
 }
 void BOC_TDM_impl::set_period(float period) {
     this->period_ = period;
+}
+void BOC_TDM_impl::set_proportion(float proportion) {
+    this->proportion_ = proportion;
 }
 
 } // namespace gr::jammingSource

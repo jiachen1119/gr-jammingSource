@@ -31,13 +31,16 @@ public:
      * class. jammingSource::BOC_TDM::make is the public interface for
      * creating new instances.
      */
-    static sptr make(int a = 10, int b = 5, float sample_freq = 30e6, float period = 0.01);
+    static sptr make(float sample_freq = 30e6, float period = 0.01, float proportion = 10.7157);
 
     virtual float sampling_freq() const = 0;
     virtual void set_sampling_freq(float sampling_freq) = 0;
 
     virtual float period() const = 0;
     virtual void set_period(float period) = 0;
+
+    virtual float proportion() const = 0;
+    virtual void set_proportion(float period) = 0;
 };
 
 } // namespace gr::jammingSource

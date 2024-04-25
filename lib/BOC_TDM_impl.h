@@ -10,30 +10,25 @@
 
 #include <gnuradio/jammingSource/BOC_TDM.h>
 #include <gnuradio/random.h>
+#include <gnuradio/filter/firdes.h>
+#include <gnuradio/filter/fft_filter_fff.h>
 
 namespace gr::jammingSource {
 
 class BOC_TDM_impl : public BOC_TDM
 {
 private:
-    // modulation coefficient
-    int n_;
-    // the chip rate of the pseudocode
-    float RC_;
-    // the chip rate of the sub-carrier
-    float Rs_;
-    float chips_per_sample_;
     float sample_freq_;
     float period_;
-    gr::random d_rng;
+    float proportion_;
 
-    int current_sample_count_ = 0;
-    int current_value_ = 1;
-    float rem_chip_ = 0;
-    int current_subcarrier_value = 1;
+    int loop_sample_mainlobe_;
+    int loop_sample_sidelobe_;
+    int current_count_;
+    int loop_sample_;
 
 public:
-    BOC_TDM_impl(int a, int b, float sample_freq, float period);
+    BOC_TDM_impl(float sample_freq, float period, float proportion);
     ~BOC_TDM_impl() override = default;
 
     // Where all the action really happens
@@ -46,6 +41,9 @@ public:
 
     float period()const override {return period_;}
     void set_period(float period) override;
+
+    float proportion()const override{return proportion_;}
+    void set_proportion(float proportion) override;
 };
 
 } // namespace gr::jammingSource

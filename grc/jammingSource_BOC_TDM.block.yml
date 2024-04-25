@@ -4,10 +4,11 @@ category: '[jammingSource]'
 
 templates:
   imports: from gnuradio import jammingSource
-  make: jammingSource.BOC_TDM(${a}, ${b}, ${samp_rate}, ${period})
+  make: jammingSource.BOC_TDM(${samp_rate}, ${period}, ${proportion})
   callbacks:
     - set_sampling_freq(${samp_rate})
     - set_period(${period})
+    - set_proportion(${proportion})
 
 #  Make one 'parameters' list entry for every parameter you want settable from the GUI.
 #     Keys include:
@@ -21,24 +22,25 @@ parameters:
     dtype: float
     default: 'samp_rate'
 
-  - id: a
-    label: a
-    dtype: int
-    default: '10'
-
-  - id: b
-    label: b
-    dtype: int
-    default: '5'
-
   - id: period
     label: period
     dtype: float
     default: '0.01'
 
+  - id: proportion
+    label: proportion
+    dtype: float
+    default: '10.7157'
+
+inputs:
+  - domain: stream
+    dtype: fc32
+  - domain: stream
+    dtype: fc32
+
 outputs:
   - domain: stream
-    dtype: float
+    dtype: fc32
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.
